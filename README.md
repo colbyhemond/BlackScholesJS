@@ -22,6 +22,9 @@ E.g.: calculating put price:
 ```javascript
 var put = BS.put(bsholder);
 ```
+### Coming soon...
+currently working at surface graphs for 3d-data-visualization...
 
 ### Note of thanks
 http://www.math.ucla.edu/~tom/distributions/normal.html for normal distribution calculation snippet.
+
