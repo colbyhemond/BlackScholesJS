@@ -12,7 +12,7 @@ Our variables are held in an instance of `BSHolder`:
 - `interest`: the annualized risk-free interest rate (e.g. 0.05 corresponds 5%)
 - `term`:  a time in years (e.g. 0.5 corresponds half-year)
 ```javascript
-var holder = new BSHolder(stock,strike,interest,vola,term);
+var bsholder = new BSHolder(stock,strike,interest,vola,term);
 ```
 
 ### Calculation
