@@ -27,7 +27,7 @@ var NormalD = {
      * @param {Number} X 
      * @returns {Number|NormalD.normalcdf.D|NormalD.normalcdf.T}
      */
-    normalcdf: function(X) {   //HASTINGS.  MAX ERROR = .000001
+    normalcdf: function (X) { //HASTINGS.  MAX ERROR = .000001
         var T = 1 / (1 + .2316419 * Math.abs(X));
         var D = .3989423 * Math.exp(-X * X / 2);
         var Prob = D * T * (.3193815 + T * (-.3565638 + T * (1.781478 + T * (-1.821256 + T * 1.330274))));
@@ -43,7 +43,7 @@ var NormalD = {
      * @param {Number} SD standard deviation
      * @returns {Number|@exp;normalcdf@pro;Prob|@exp;normalcdf@pro;D|@exp;normalcdf@pro;T|normalcdf.Prob|@exp;Math@call;exp|normalcdf.D|@exp;Math@call;abs|normalcdf.T}
      */
-    compute: function(Z, M, SD) {
+    compute: function (Z, M, SD) {
         var Prob;
         if (SD < 0) {
             $C.e("normal", "The standard deviation must be nonnegative.");
@@ -65,7 +65,7 @@ var NormalD = {
      * @param {Number} Z x-Value
      * @returns {Number|normalcdf.D|normalcdf.T|normalcdf.Prob}
      */
-    stdcompute: function(Z) {
+    stdcompute: function (Z) {
         return NormalD.compute(Z, 0, 1);
     },
     /**
@@ -73,7 +73,7 @@ var NormalD = {
      * @param {type} x Value
      * @returns {Number}
      */
-    stdpdf: function(x) {
+    stdpdf: function (x) {
         var m = Math.sqrt(2 * Math.PI);
         var e = Math.exp(-Math.pow(x, 2) / 2);
         return e / m;
@@ -85,17 +85,32 @@ var NormalD = {
  * @type type
  */
 var BS = {
+    calcD1: function (h) {
+        return (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+    },
+    calcD2: function (h) {
+        return this.calcD1(h) - (h.vola * Math.sqrt(h.term));
+    },
+    calcS: function (h, phi) {
+        return -(h.stock * phi * h.vola) / (2 * Math.sqrt(h.term));
+    },
+    calcK: function (h, d2) {
+        return h.interest * h.strike * Math.exp(-h.interest * h.term) * NormalD.normalcdf(d2);
+    },
+    calcND2: function (h, d1) {
+        return NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
+    },
     /**
      * 
      * 
      * @param {BSHolder} BSHolder Holder der BS-Variablen
      * @returns {Number|normalcdf.D|normalcdf.T|normalcdf.Prob} Fairen Preis
      */
-    call: function(BSHolder)
-    {
-
-        var d1 = (Math.log(BSHolder.stock / BSHolder.strike) + (BSHolder.interest + .5 * Math.pow(BSHolder.vola, 2)) * BSHolder.term) / (BSHolder.vola * Math.sqrt(BSHolder.term));
-        var d2 = d1 - (BSHolder.vola * Math.sqrt(BSHolder.term));
+    call: function (BSHolder) {
+        // var d1 = (Math.log(BSHolder.stock / BSHolder.strike) + (BSHolder.interest + .5 * Math.pow(BSHolder.vola, 2)) * BSHolder.term) / (BSHolder.vola * Math.sqrt(BSHolder.term));
+        var d1 = this.calcD1(BSHolder);
+        // var d2 = d1 - (BSHolder.vola * Math.sqrt(BSHolder.term));
+        var d2 = this.calcD2(BSHolder);;
         var res = Math.round((BSHolder.stock * NormalD.stdcompute(d1) - BSHolder.strike * Math.exp(-BSHolder.interest * BSHolder.term) * NormalD.stdcompute(d2)) * 100) / 100;
         if (isNaN(res)) {
             return 0;
@@ -108,120 +123,135 @@ var BS = {
      * @param {BSHolder} BSHolder Holder der BS-Variablen
      * @returns {Number|normalcdf.D|normalcdf.T|normalcdf.Prob} Fairen Preis
      */
-    put: function(BSHolder)
-    {
-        var d1 = (Math.log(BSHolder.stock / BSHolder.strike) + (BSHolder.interest + .5 * Math.pow(BSHolder.vola, 2)) * BSHolder.term) / (BSHolder.vola * Math.sqrt(BSHolder.term));
-        var d2 = d1 - (BSHolder.vola * Math.sqrt(BSHolder.term));
+    put: function (BSHolder) {
+        // var d1 = (Math.log(BSHolder.stock / BSHolder.strike) + (BSHolder.interest + .5 * Math.pow(BSHolder.vola, 2)) * BSHolder.term) / (BSHolder.vola * Math.sqrt(BSHolder.term));
+        var d1 = this.calcD1(BSHolder);
+        // var d2 = d1 - (BSHolder.vola * Math.sqrt(BSHolder.term));
+        var d2 = this.calcD2(BSHolder)
         var res = Math.round((BSHolder.strike * Math.pow(Math.E, -BSHolder.interest * BSHolder.term) * NormalD.stdcompute(-d2) - BSHolder.stock * NormalD.stdcompute(-d1)) * 100) / 100;
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    cdelta: function(h)
-    {
+    cdelta: function (h) {
 
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        var d1 = this.calcD1(h);
         var res = Math.max(NormalD.stdcompute(d1), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    pdelta: function(h)
-    {
+    pdelta: function (h) {
 
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        var d1 = this.calcD1(h);
         var res = Math.min(NormalD.stdcompute(d1) - 1, 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    gamma: function(h)
-    {
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+    gamma: function (h) {
+        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        var d1 = this.calcD1(h)
         var phi = NormalD.stdpdf(d1);
-        var res = Math.max(phi / (h.stock * h.vola * Math.sqrt(h.term)), 0);
-        ;
+        var res = Math.max(phi / (h.stock * h.vola * Math.sqrt(h.term)), 0);;
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    vega: function(h) {
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+    vega: function (h) {
+        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        var d1 = this.calcD1(h);
         var phi = NormalD.stdpdf(d1);
-        var res = Math.max(h.stock * phi * Math.sqrt(h.term), 0);
+        var res = Math.max((h.stock * phi * Math.sqrt(h.term)/100), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
 
     },
-    ctheta: function(h) {
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d2 = d1 - (h.vola * Math.sqrt(h.term));
+    ctheta: function (h) {
+        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        var d1 = this.calcD1(h);
+        // var d2 = d1 - (h.vola * Math.sqrt(h.term));
+        var d2 = this.calcD2(h);
         var phi = NormalD.stdpdf(d1);
-        var s = -(h.stock * phi * h.vola) / (2 * Math.sqrt(h.term));
-        var k = h.interest * h.strike * Math.exp(-h.interest * h.term) * NormalD.normalcdf(d2);
-        var res = Math.min(s - k, 0);
+        // var s = -(h.stock * phi * h.vola) / (2 * Math.sqrt(h.term));
+        var s = this.calcS(h, phi);
+        // var k = h.interest * h.strike * Math.exp(-h.interest * h.term) * NormalD.normalcdf(d2);
+        var k = this.calcK(h, d2);
+        var res = Math.min(((s - k)/365), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    ptheta: function(h) {
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d2 = d1 - (h.vola * Math.sqrt(h.term));
+    ptheta: function (h) {
+        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        var d1 = this.calcD1(h);
+        // var d2 = d1 - (h.vola * Math.sqrt(h.term));
+        var d2 = this.calcD2(h);
         var phi = NormalD.stdpdf(d1);
-        var s = -(h.stock * phi * h.vola) / (2 * Math.sqrt(h.term));
-        var k = h.interest * h.strike * Math.exp(-h.interest * h.term) * NormalD.normalcdf(-d2);
-        var res = Math.min(s + k, 0);
+        // var s = -(h.stock * phi * h.vola) / (2 * Math.sqrt(h.term));
+        var s = this.calcS(h, phi);
+        // var k = h.interest * h.strike * Math.exp(-h.interest * h.term) * NormalD.normalcdf(-d2);
+        var k = this.calcK(h, d2);
+        var res = Math.min(((s + k)/365), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    crho: function(h) {
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
-        var res = Math.max(h.term * h.strike * Math.exp(-h.interest * h.term) * nd2, 0);
+    crho: function (h) {
+        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        var d1 = this.calcD1(h);
+        // var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
+        var nd2 = this.calcND2(h, d1)
+        var res = Math.max(((h.term * h.strike * Math.exp(-h.interest * h.term) * nd2)/100), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    prho: function(h) {
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+    prho: function (h) {
+        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+        var d1 = this.calcD1(h);
         var nnd2 = NormalD.normalcdf(-(d1 - (h.vola * Math.sqrt(h.term))));
-        var res = Math.min(-h.term * h.strike * Math.exp(-h.interest * h.term) * nnd2, 0);
-        if (isNaN(res)) {
-            return 0;
-        }
-        return res;
-    },
-    comega: function(h) {
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
-        var res = nd2 * (h.stock / BS.call(h));
-        if (isNaN(res)) {
-            return 0;
-        }
-        return res;
-    },
-    pomega: function(h) {
-        var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
-        var res = (nd2 - 1) * (h.stock / BS.put(h));
+        var res = Math.min(((-h.term * h.strike * Math.exp(-h.interest * h.term) * nnd2)/100), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     }
+    // comega: function (h) {
+    //     // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+    //     var d1 = this.calcD1(h);
+    //     // var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
+    //     var nd2 = this.calcND2(h, d1)
+    //     var res = nd2 * (h.stock / BS.call(h));
+    //     if (isNaN(res)) {
+    //         return 0;
+    //     }
+    //     return res;
+    // },
+    // pomega: function (h) {
+    //     // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+    //     var d1 = this.calcD1(h);
+    //     // var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
+    //     var nd2 = this.calcND2(h, d1)
+    //     var res = (nd2 - 1) * (h.stock / BS.put(h));
+    //     if (isNaN(res)) {
+    //         return 0;
+    //     }
+    //     return res;
+    // }
 };
-var graph = {
-};
+var graph = {};
 /**
  * Behälter für die BlackScholes Variablen
  * 
@@ -233,19 +263,18 @@ var graph = {
  * @returns {BSHolder}
  */
 function BSHolder(
-        stock,
-        strike,
-        interest,
-        vola,
-        term)
-{
+    stock,
+    strike,
+    interest,
+    vola,
+    term) {
     this.stock = Math.max(stock, 0);
     this.strike = Math.max(strike, 0);
     this.interest = Math.max(interest, 0);
     this.vola = Math.max(vola, 0);
     this.term = Math.max(term, 0);
 
-    this.setStock = function(s) {
+    this.setStock = function (s) {
         if (typeof s === 'undefined') {
             return this.stock;
         } else {
@@ -254,7 +283,7 @@ function BSHolder(
         }
     };
 
-    this.setStrike = function(s) {
+    this.setStrike = function (s) {
         if (typeof s === 'undefined') {
             return this.strike;
         } else {
@@ -262,7 +291,7 @@ function BSHolder(
             return this;
         }
     };
-    this.setInterest = function(s) {
+    this.setInterest = function (s) {
         if (typeof s === 'undefined') {
             return this.interest;
         } else {
@@ -270,7 +299,7 @@ function BSHolder(
             return this;
         }
     };
-    this.setVola = function(s) {
+    this.setVola = function (s) {
         if (typeof s === 'undefined') {
             return this.vola;
         } else {
@@ -278,7 +307,7 @@ function BSHolder(
             return this;
         }
     };
-    this.setTerm = function(s) {
+    this.setTerm = function (s) {
         if (typeof s === 'undefined') {
             return this.term;
         } else {
@@ -287,5 +316,4 @@ function BSHolder(
         }
     };
 
-}
-;
+};
