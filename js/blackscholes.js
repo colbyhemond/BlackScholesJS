@@ -1,6 +1,6 @@
 //The MIT License (MIT)
 //
-//Copyright (c) 2014 Stefano Paggi
+//Copyright (c) 2020 Colby Hemond (hi-jacked from Stefano Paggi)
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -228,92 +228,4 @@ var BS = {
         }
         return res;
     }
-    // comega: function (h) {
-    //     // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-    //     var d1 = this.calcD1(h);
-    //     // var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
-    //     var nd2 = this.calcND2(h, d1)
-    //     var res = nd2 * (h.stock / BS.call(h));
-    //     if (isNaN(res)) {
-    //         return 0;
-    //     }
-    //     return res;
-    // },
-    // pomega: function (h) {
-    //     // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-    //     var d1 = this.calcD1(h);
-    //     // var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
-    //     var nd2 = this.calcND2(h, d1)
-    //     var res = (nd2 - 1) * (h.stock / BS.put(h));
-    //     if (isNaN(res)) {
-    //         return 0;
-    //     }
-    //     return res;
-    // }
-};
-var graph = {};
-/**
- * Behälter für die BlackScholes Variablen
- * 
- * @param {Float} stock underlying's asset price
- * @param {Float} strike strike price
- * @param {Float} interest annualized risk-free interest rate
- * @param {Float} vola volatility
- * @param {Float} term a time in years
- * @returns {BSHolder}
- */
-function BSHolder(
-    stock,
-    strike,
-    interest,
-    vola,
-    term) {
-    this.stock = Math.max(stock, 0);
-    this.strike = Math.max(strike, 0);
-    this.interest = Math.max(interest, 0);
-    this.vola = Math.max(vola, 0);
-    this.term = Math.max(term, 0);
-
-    this.setStock = function (s) {
-        if (typeof s === 'undefined') {
-            return this.stock;
-        } else {
-            this.stock = Math.max(s, 0);
-            return this;
-        }
-    };
-
-    this.setStrike = function (s) {
-        if (typeof s === 'undefined') {
-            return this.strike;
-        } else {
-            this.strike = Math.max(s, 0);
-            return this;
-        }
-    };
-    this.setInterest = function (s) {
-        if (typeof s === 'undefined') {
-            return this.interest;
-        } else {
-            this.interest = Math.max(s, 0);
-            return this;
-        }
-    };
-    this.setVola = function (s) {
-        if (typeof s === 'undefined') {
-            return this.vola;
-        } else {
-            this.vola = Math.max(s, 0);
-            return this;
-        }
-    };
-    this.setTerm = function (s) {
-        if (typeof s === 'undefined') {
-            return this.term;
-        } else {
-            this.term = Math.max(s, 0);
-            return this;
-        }
-    };
-
 };
