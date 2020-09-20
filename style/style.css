@@ -1,0 +1,17 @@
+#img-github-logo {
+    max-width: 100px;
+}
+
+.code-container {
+    background-color: #EEE;
+    padding: 2em 1em;
+    display: flex;
+    justify-content: center;
+}
+
+#cdn-snippet {
+    background-color: #DDD;
+    border: none;
+    width: 35em;
+    padding: .5em 1em;
+}

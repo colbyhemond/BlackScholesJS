@@ -14,20 +14,39 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="./style/style.css">
 </head>
 
 <body>
 
-    <div class="container-fluid text-center">
+    <div class="container mt-5 text-center">
         <h1>Black Scholes JS</h1>
-        <pre>
-            <code>
-&lt/script src="https://black-scholes-js.netlify.app/js/blackscholes.js">
-            </code>
-        </pre>
-        <p>Check it out on <a href="https://github.com/colbyhemond/BlackScholesJS"><img src="/images/GitHub_Logo.png" alt="Git Hub"></a></p>
+        <div class="code-container">
+            <!-- <code id="cdn-snippet">
+                &lt;/script src="https://black-scholes-js.netlify.app/js/blackscholes.js"&gt;
+            </code> -->
+
+            <input type="text" value='&lt;/script src="https://black-scholes-js.netlify.app/js/blackscholes.js"&gt;'
+                id="cdn-snippet">
+            <button class="btn btn-secondary mx-2" onclick="myFunction()">copy</button>
+        </div>
+        <p>Check it out on <a href="https://github.com/colbyhemond/BlackScholesJS"><img src="./images/GitHub_Logo.png"
+                    alt="Git Hub" id="img-github-logo"></a></p>
     </div>
 
+    <script>
+        function myFunction() {
+            /* Get the text field */
+            var copyText = document.getElementById("cdn-snippet");
+
+            /* Select the text field */
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+        }
+    </script>
 </body>
 
 </html>
