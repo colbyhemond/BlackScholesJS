@@ -1,6 +1,6 @@
 //The MIT License (MIT)
 //
-//Copyright (c) 2020 Colby Hemond (hi-jacked from Stefano Paggi)
+//Copyright (c) 2014 Stefano Paggi
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -101,15 +101,12 @@ var BS = {
         return NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
     },
     /**
-     * 
-     * 
-     * @param {BSHolder} BSHolder Holder der BS-Variablen
-     * @returns {Number|normalcdf.D|normalcdf.T|normalcdf.Prob} Fairen Preis
+     * Get the call price
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Number} Fair Price
      */
     call: function (BSHolder) {
-        // var d1 = (Math.log(BSHolder.stock / BSHolder.strike) + (BSHolder.interest + .5 * Math.pow(BSHolder.vola, 2)) * BSHolder.term) / (BSHolder.vola * Math.sqrt(BSHolder.term));
         var d1 = this.calcD1(BSHolder);
-        // var d2 = d1 - (BSHolder.vola * Math.sqrt(BSHolder.term));
         var d2 = this.calcD2(BSHolder);;
         var res = Math.round((BSHolder.stock * NormalD.stdcompute(d1) - BSHolder.strike * Math.exp(-BSHolder.interest * BSHolder.term) * NormalD.stdcompute(d2)) * 100) / 100;
         if (isNaN(res)) {
@@ -118,15 +115,12 @@ var BS = {
         return res;
     },
     /**
-     * 
-     * 
-     * @param {BSHolder} BSHolder Holder der BS-Variablen
-     * @returns {Number|normalcdf.D|normalcdf.T|normalcdf.Prob} Fairen Preis
+     * Get the put price
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Number} Fair Price
      */
     put: function (BSHolder) {
-        // var d1 = (Math.log(BSHolder.stock / BSHolder.strike) + (BSHolder.interest + .5 * Math.pow(BSHolder.vola, 2)) * BSHolder.term) / (BSHolder.vola * Math.sqrt(BSHolder.term));
         var d1 = this.calcD1(BSHolder);
-        // var d2 = d1 - (BSHolder.vola * Math.sqrt(BSHolder.term));
         var d2 = this.calcD2(BSHolder)
         var res = Math.round((BSHolder.strike * Math.pow(Math.E, -BSHolder.interest * BSHolder.term) * NormalD.stdcompute(-d2) - BSHolder.stock * NormalD.stdcompute(-d1)) * 100) / 100;
         if (isNaN(res)) {
@@ -134,95 +128,118 @@ var BS = {
         }
         return res;
     },
-    cdelta: function (h) {
-
-        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d1 = this.calcD1(h);
+    /**
+     * Get the call delta
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Float}  call delta
+     */
+    cdelta: function (BSHolder) {
+        var d1 = this.calcD1(BSHolder);
         var res = Math.max(NormalD.stdcompute(d1), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    pdelta: function (h) {
-
-        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d1 = this.calcD1(h);
+    /**
+     * Get the put delta
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Float}  put delta
+     */
+    pdelta: function (BSHolder) {
+        var d1 = this.calcD1(BSHolder);
         var res = Math.min(NormalD.stdcompute(d1) - 1, 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    gamma: function (h) {
-        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d1 = this.calcD1(h)
+    /**
+     * Get the gamma
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Float}  gamma
+     */
+    gamma: function (BSHolder) {
+        var d1 = this.calcD1(BSHolder)
         var phi = NormalD.stdpdf(d1);
-        var res = Math.max(phi / (h.stock * h.vola * Math.sqrt(h.term)), 0);;
+        var res = Math.max(phi / (BSHolder.stock * BSHolder.vola * Math.sqrt(BSHolder.term)), 0);;
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
+    /**
+     * Get the vega
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Float}  vega
+     */
     vega: function (h) {
-        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d1 = this.calcD1(h);
+        var d1 = this.calcD1(BSHolder);
         var phi = NormalD.stdpdf(d1);
-        var res = Math.max((h.stock * phi * Math.sqrt(h.term)/100), 0);
+        var res = Math.max((BSHolder.stock * phi * Math.sqrt(BSHolder.term)/100), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
 
     },
-    ctheta: function (h) {
-        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d1 = this.calcD1(h);
-        // var d2 = d1 - (h.vola * Math.sqrt(h.term));
-        var d2 = this.calcD2(h);
+    /**
+     * Get the call theta
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Float}  call theta
+     */
+    ctheta: function (BSHolder) {
+        var d1 = this.calcD1(BSHolder);
+        var d2 = this.calcD2(BSHolder);
         var phi = NormalD.stdpdf(d1);
-        // var s = -(h.stock * phi * h.vola) / (2 * Math.sqrt(h.term));
-        var s = this.calcS(h, phi);
-        // var k = h.interest * h.strike * Math.exp(-h.interest * h.term) * NormalD.normalcdf(d2);
-        var k = this.calcK(h, d2);
+        var s = this.calcS(BSHolder, phi);
+        var k = this.calcK(BSHolder, d2);
         var res = Math.min(((s - k)/365), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    ptheta: function (h) {
-        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d1 = this.calcD1(h);
-        // var d2 = d1 - (h.vola * Math.sqrt(h.term));
-        var d2 = this.calcD2(h);
+    /**
+     * Get the put theta
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Float}  put theta
+     */
+    ptheta: function (BSHolder) {
+        var d1 = this.calcD1(BSHolder);
+        var d2 = this.calcD2(BSHolder);
         var phi = NormalD.stdpdf(d1);
-        // var s = -(h.stock * phi * h.vola) / (2 * Math.sqrt(h.term));
-        var s = this.calcS(h, phi);
-        // var k = h.interest * h.strike * Math.exp(-h.interest * h.term) * NormalD.normalcdf(-d2);
-        var k = this.calcK(h, d2);
+        var s = this.calcS(BSHolder, phi);
+        var k = this.calcK(BSHolder, d2);
         var res = Math.min(((s + k)/365), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    crho: function (h) {
-        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d1 = this.calcD1(h);
-        // var nd2 = NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
-        var nd2 = this.calcND2(h, d1)
-        var res = Math.max(((h.term * h.strike * Math.exp(-h.interest * h.term) * nd2)/100), 0);
+    /**
+     * Get the call rho
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Float}  call rho
+     */
+    crho: function (BSHolder) {
+        var d1 = this.calcD1(BSHolder);
+        var nd2 = this.calcND2(BSHolder, d1)
+        var res = Math.max(((BSHolder.term * BSHolder.strike * Math.exp(-BSHolder.interest * BSHolder.term) * nd2)/100), 0);
         if (isNaN(res)) {
             return 0;
         }
         return res;
     },
-    prho: function (h) {
-        // var d1 = (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
-        var d1 = this.calcD1(h);
-        var nnd2 = NormalD.normalcdf(-(d1 - (h.vola * Math.sqrt(h.term))));
-        var res = Math.min(((-h.term * h.strike * Math.exp(-h.interest * h.term) * nnd2)/100), 0);
+    /**
+     * Get the put rho
+     * @param {BSHolder} BSHolder BS holder variables
+     * @returns {Float}  put rho
+     */
+    prho: function (BSHolder) {
+        var d1 = this.calcD1(BSHolder);
+        var nnd2 = NormalD.normalcdf(-(d1 - (BSHolder.vola * Math.sqrt(BSHolder.term))));
+        var res = Math.min(((-BSHolder.term * BSHolder.strike * Math.exp(-BSHolder.interest * BSHolder.term) * nnd2)/100), 0);
         if (isNaN(res)) {
             return 0;
         }
