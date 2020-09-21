@@ -27,6 +27,8 @@ E.g.: calculating put price:
 var put = BS.put(bsholder);
 ```
 
-### Shoutouts
-http://www.math.ucla.edu/~tom/distributions/normal.html for normal distribution calculation snippet.
+### Credit
+- [Normal Distribution Calculation](http://www.math.ucla.edu/~tom/distributions/normal.html)
+- [Stefano Paggi](https://github.com/paggist)
+
 
