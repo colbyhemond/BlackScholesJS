@@ -246,3 +246,5 @@ var BS = {
         return res;
     }
 };
+
+return BS;
