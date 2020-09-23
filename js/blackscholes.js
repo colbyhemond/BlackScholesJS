@@ -247,4 +247,57 @@ var BS = {
     }
 };
 
-return BS;
+function BSHolder(
+    stock,
+    strike,
+    interest,
+    vola,
+    term) {
+    this.stock = Math.max(stock, 0);
+    this.strike = Math.max(strike, 0);
+    this.interest = Math.max(interest, 0);
+    this.vola = Math.max(vola, 0);
+    this.term = Math.max(term, 0);
+
+    this.setStock = function (s) {
+        if (typeof s === 'undefined') {
+            return this.stock;
+        } else {
+            this.stock = Math.max(s, 0);
+            return this;
+        }
+    };
+
+    this.setStrike = function (s) {
+        if (typeof s === 'undefined') {
+            return this.strike;
+        } else {
+            this.strike = Math.max(s, 0);
+            return this;
+        }
+    };
+    this.setInterest = function (s) {
+        if (typeof s === 'undefined') {
+            return this.interest;
+        } else {
+            this.interest = Math.max(s, 0);
+            return this;
+        }
+    };
+    this.setVola = function (s) {
+        if (typeof s === 'undefined') {
+            return this.vola;
+        } else {
+            this.vola = Math.max(s, 0);
+            return this;
+        }
+    };
+    this.setTerm = function (s) {
+        if (typeof s === 'undefined') {
+            return this.term;
+        } else {
+            this.term = Math.max(s, 0);
+            return this;
+        }
+    };
+};
