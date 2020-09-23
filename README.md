@@ -4,7 +4,7 @@ Black-Scholes fair option price calculator in JS. Greeks included.
 ## API
 The library can be added to your website for use via CDN by adding the following tag to your website:
 ```html
-</script src="https://black-scholes-js.netlify.app/js/blackscholes.js">
+<script src="https://black-scholes-js.netlify.app/js/blackscholes.js"></script>
 ```
 
 ### Setting up Black-Scholes variables
