@@ -247,6 +247,16 @@ var BS = {
     }
 };
 
+/**
+ * Behälter für die BlackScholes Variablen
+ * 
+ * @param {Float} stock underlying's asset price
+ * @param {Float} strike strike price
+ * @param {Float} interest annualized risk-free interest rate
+ * @param {Float} vola volatility
+ * @param {Float} term a time in years
+ * @returns {BSHolder}
+ */
 function BSHolder(
     stock,
     strike,
