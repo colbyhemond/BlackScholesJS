@@ -9,9 +9,10 @@
     justify-content: center;
 }
 
-#cdn-snippet {
-    background-color: #DDD;
-    border: none;
+.snippet {
+    /* background-color: #DDD;
+    border: none; */
     width: 35em;
     padding: .5em 1em;
+    font-family: monospace;
 }

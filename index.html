@@ -22,36 +22,53 @@
     <div class="container mt-5 text-center">
         <h1>Black Scholes JS</h1>
         <div class="code-container">
-            <input type="text" class="form-control" value='&lt;script src="https://black-scholes-js.netlify.app/js/blackscholes.js"&gt;&lt;/script&gt;'
-                id="cdn-snippet" readonly>
-            <button class="btn btn-secondary mx-2" onclick="myFunction()">copy</button>
+                <input type="text" class="form-control snippet"
+                    value='&lt;script src="https://black-scholes-js.netlify.app/js/blackscholes.js"&gt;&lt;/script&gt;'
+                    id="cdn-snippet" readonly>
+            <button class="btn btn-secondary mx-2" onclick="copyCode('cdn-snippet')">copy</button>
         </div>
-        <p class="d-flex justify-content-center align-items-center">Check it out on <a href="https://github.com/colbyhemond/BlackScholesJS"><img src="./images/GitHub_Logo.png"
-                    alt="Git Hub" id="img-github-logo"></a></p>
+        <p class="d-flex justify-content-center align-items-center">Check it out on <a
+                href="https://github.com/colbyhemond/BlackScholesJS"><img src="./images/GitHub_Logo.png" alt="Git Hub"
+                    id="img-github-logo"></a></p>
     </div>
     <div class="container mt-5">
         <h2 class="text-center">Documentation</h2>
         <div id="documentation">
-            <p>The BlackScholesJS calculator takes in five important parameters to compute the prices and greeks. </p>
-            <p>The five parameters are:</p>
+            <h3 class="text-center">Set Up</h3>
+            <p>Before even starting to calculate a fair option price, we need to set up the needed variables.
+                Our variables are held in an instance of <code>BSHolder</code>:</p>
             <ul>
-                <li>Stock</li>
-                <li>Strike</li>
-                <li>Vola</li>
-                <li>Interest</li>
-                <li>Term</li>
+                <li><code>stock</code>: underlying's asset price</li>
+                <li><code>strike</code>: strike price</li>
+                <li><code>interest</code>: the annualized risk-free interest rate (e.g. 0.05 corresponds 5%)</li>
+                <li><code>vola</code>: volatility (e.g. 0.3 corresponds 30%)</li>
+                <li><code>term</code>: a time in years (e.g. 0.5 corresponds half-year)</li>
             </ul>
             <div class="code-container">
-                
+                    <input type="text" class="form-control snippet"
+                        value='var bsholder = new BSHolder(stock,strike,interest,vola,term);' id="constructor-snippet"
+                        readonly>
+                <button class="btn btn-secondary mx-2" onclick="copyCode('constructor-snippet')">copy</button>
+            </div>
+
+            <h3 class="text-center">Calculation</h3>
+            <p>All function regarding calculations are members in <code>BS</code>.
+                Pass an instance of <code>BSHolder</code> to a function from <code>BS</code>.
+                E.g.: calculating put price:</p>
+            <div class="code-container">
+                    <input type="text" class="form-control snippet" value='var put = BS.put(bsholder);' id="example-snippet"
+                        readonly>
+                <button class="btn btn-secondary mx-2" onclick="copyCode('example-snippet')">copy</button>
             </div>
         </div>
-
+    </div>
+    <div class="container mt-5">
     </div>
 
     <script>
-        function myFunction() {
+        function copyCode(elementId) {
             /* Get the text field */
-            var copyText = document.getElementById("cdn-snippet");
+            var copyText = document.getElementById(elementId);
 
             /* Select the text field */
             copyText.select();
