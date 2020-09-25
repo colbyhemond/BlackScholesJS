@@ -1,14 +1,14 @@
-const BlackScholes = require("../js/blackscholes.js");
+const BlackScholes = require("../js/v2/blackscholes.js");
 
 // Set Up
 let stock = 0.00
 let strike = 0.00
-let vola = 0.00
 let interest = 0.00
+let vola = 0.00
 let term = 0.00
 
-let BSHolder = new BlackScholes(stock, strike, vola, interest, term)
+let BS = new BlackScholes(stock, strike,  interest, vola, term)
 
-test("Returns about-us for english ", () => {
-    expect(getAboutUsLink("en-US")).toBe("/about-us");
+test("0 holder values returns 0 put", () => {
+    expect(BS.getPut()).toBe(0.00);
 });

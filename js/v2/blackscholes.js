@@ -1,6 +1,6 @@
 //The MIT License (MIT)
 //
-//Copyright (c) 2014 Stefano Paggi
+//Copyright (c) 2020 Colby Hemond
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -85,20 +85,20 @@ var NormalD = {
  * @type type
  */
 var BS = {
-    calcD1: function (h) {
-        return (Math.log(h.stock / h.strike) + (h.interest + .5 * Math.pow(h.vola, 2)) * h.term) / (h.vola * Math.sqrt(h.term));
+    calcD1: function (stock, strike, interest, vola, term) {
+        return (Math.log(stock / strike) + (interest + .5 * Math.pow(vola, 2)) * term) / (vola * Math.sqrt(term));
     },
-    calcD2: function (h) {
-        return this.calcD1(h) - (h.vola * Math.sqrt(h.term));
+    calcD2: function (stock, strike, interest, vola, term) {
+        return this.calcD1(stock, strike, interest, vola, term) - (vola * Math.sqrt(term));
     },
-    calcS: function (h, phi) {
-        return -(h.stock * phi * h.vola) / (2 * Math.sqrt(h.term));
+    calcS: function (stock, strike, interest, vola, term, phi) {
+        return -(stock * phi * vola) / (2 * Math.sqrt(term));
     },
-    calcK: function (h, d2) {
-        return h.interest * h.strike * Math.exp(-h.interest * h.term) * NormalD.normalcdf(d2);
+    calcK: function (stock, strike, interest, vola, term, d2) {
+        return interest * strike * Math.exp(-interest * term) * NormalD.normalcdf(d2);
     },
-    calcND2: function (h, d1) {
-        return NormalD.normalcdf(d1 - (h.vola * Math.sqrt(h.term)));
+    calcND2: function (stock, strike, interest, vola, term, d1) {
+        return NormalD.normalcdf(d1 - (vola * Math.sqrt(term)));
     },
     /**
      * Get the call price
@@ -106,8 +106,8 @@ var BS = {
      * @returns {Number} Fair Price
      */
     call: function (BSHolder) {
-        var d1 = this.calcD1(BSHolder);
-        var d2 = this.calcD2(BSHolder);;
+        var d1 = this.calcD1(this.stock, this.strike, this.interest, this.vola, this.term);
+        var d2 = this.calcD2(this.stock, this.strike, this.interest, this.vola, this.term));;
         var res = Math.round((BSHolder.stock * NormalD.stdcompute(d1) - BSHolder.strike * Math.exp(-BSHolder.interest * BSHolder.term) * NormalD.stdcompute(d2)) * 100) / 100;
         if (isNaN(res)) {
             return 0;
@@ -312,7 +312,7 @@ function BSHolder(
             return this;
         }
     };
-    this.put = function (BSHolder) {
+    this.getPut = function () {
         var d1 = BS.calcD1(BSHolder);
         var d2 = BS.calcD2(BSHolder)
         var res = Math.round((this.strike * Math.pow(Math.E, -this.interest * this.term) * NormalD.stdcompute(-d2) - this.stock * NormalD.stdcompute(-d1)) * 100) / 100;

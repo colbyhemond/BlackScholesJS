@@ -4,7 +4,7 @@
   "description": "Black-Scholes fair option price calculator in JS. Greeks included.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
