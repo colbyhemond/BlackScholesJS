@@ -6,6 +6,7 @@ The library can be added to your website for use via CDN by adding the following
 ```html
 <script src="https://black-scholes-js.netlify.app/js/blackscholes.js"></script>
 ```
+[https://black-scholes-js.netlify.app](https://black-scholes-js.netlify.app)
 
 ### Setting up Black-Scholes variables
 Before even starting to calculate a fair option price, we need to set up the needed variables.
