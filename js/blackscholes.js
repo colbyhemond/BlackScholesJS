@@ -247,7 +247,7 @@ var BS = {
     }
     
 };
-module.exports = BS;
+
 
 /**
  * Holder object for BlackScholes variables
@@ -323,5 +323,3 @@ function BSHolder(
     }
     return this;
 };
-
-module.exports = BSHolder;

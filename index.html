@@ -22,16 +22,23 @@
     <div class="container mt-5 text-center">
         <h1>Black Scholes JS</h1>
         <div class="code-container">
-                <input type="text" class="form-control snippet"
-                    value='&lt;script src="https://black-scholes-js.netlify.app/js/blackscholes.js"&gt;&lt;/script&gt;'
-                    id="cdn-snippet" readonly>
+            <input type="text" class="form-control snippet"
+                value='&lt;script src="https://black-scholes-js.netlify.app/js/blackscholes.js"&gt;&lt;/script&gt;'
+                id="cdn-snippet" readonly>
             <button class="btn btn-secondary mx-2" onclick="copyCode('cdn-snippet')">copy</button>
         </div>
         <p class="d-flex justify-content-center align-items-center">Check it out on <a
                 href="https://github.com/colbyhemond/BlackScholesJS"><img src="./images/GitHub_Logo.png" alt="Git Hub"
                     id="img-github-logo"></a></p>
         <p class="d-flex justify-content-center align-items-center">...or view the <a
-                        href="https://black-scholes-js.netlify.app/js/blackscholes.js">source</a> directly</p>
+                href="https://black-scholes-js.netlify.app/js/blackscholes.js"> source </a> directly</p>
+    </div>
+    <div class="container mt-5 text-center">
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <button type="button" class="btn btn-primary active" onclick="window.location = './index.html'">Docs</button>
+            <button type="button" class="btn btn-primary"
+                onclick="window.location = './calculator.html'" >Calculator</button>
+        </div>
     </div>
     <div class="container mt-5">
         <h2 class="text-center">Documentation</h2>
@@ -47,9 +54,9 @@
                 <li><code>term</code>: a time in years (e.g. 0.5 corresponds half-year)</li>
             </ul>
             <div class="code-container">
-                    <input type="text" class="form-control snippet"
-                        value='var bsholder = new BSHolder(stock,strike,interest,vola,term);' id="constructor-snippet"
-                        readonly>
+                <input type="text" class="form-control snippet"
+                    value='var bsholder = new BSHolder(stock,strike,interest,vola,term);' id="constructor-snippet"
+                    readonly>
                 <button class="btn btn-secondary mx-2" onclick="copyCode('constructor-snippet')">copy</button>
             </div>
 
@@ -58,8 +65,8 @@
                 Pass an instance of <code>BSHolder</code> to a function from <code>BS</code>.
                 E.g.: calculating put price:</p>
             <div class="code-container">
-                    <input type="text" class="form-control snippet" value='var put = BS.put(bsholder);' id="example-snippet"
-                        readonly>
+                <input type="text" class="form-control snippet" value='var put = BS.put(bsholder);' id="example-snippet"
+                    readonly>
                 <button class="btn btn-secondary mx-2" onclick="copyCode('example-snippet')">copy</button>
             </div>
         </div>
